@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Make YOU Up</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <!-- PDF.js para leer texto de PDFs digitales -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+<style>
+/* ════════════════════════════════════════
+   MAKE YOU UP · Estilos
+   Paleta: crema · vino · dorado · rosa palo
+════════════════════════════════════════ */
+:root {
+  --cream:     #FAF6F1;
+  --blush:     #F2E4E1;
+  --rose:      #D4A5A0;
+  --wine:      #3B1A1F;
+  --wine-soft: #5C3039;
+  --gold:      #B8955A;
+  --gold-lt:   #D4B07A;
+  --white:     #FFFFFF;
+  --muted:     #8C6B6F;
+  --border:    #E8D5D0;
+  --green:     #2D6A4F;
+  --red:       #7B2D30;
+
+  --ff-display: 'Cormorant Garamond', Georgia, serif;
+  --ff-body:    'Inter', system-ui, sans-serif;
+  --radius:     14px;
+  --radius-sm:  8px;
+  --shadow:     0 4px 32px rgba(59,26,31,.08);
+  --shadow-lg:  0 12px 48px rgba(59,26,31,.14);
+  --trans:      .22s ease;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--ff-body);
+  background: var(--cream);
+  color: var(--wine);
+  min-height: 100vh;
+}
+
+/* ── HEADER ─────────────────────────── */
+.header {
+  background: var(--wine);
+  height: 66px;
+  display: flex; align-items: center;
+  padding: 0 2rem;
+  position: sticky; top: 0; z-index: 100;
+  box-shadow: 0 2px 20px rgba(59,26,31,.35);
+}
+.header-inner {
+  max-width: 900px; width: 100%; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.brand {
+  display: flex; align-items: center; gap: .55rem;
+}
+.brand-gem {
+  color: var(--gold);
+  font-size: .95rem;
+  animation: glow 3s ease-in-out infinite;
+}
+@keyframes glow {
+  0%,100% { opacity:1; } 50% { opacity:.4; }
+}
+.brand-name {
+  font-family: var(--ff-display);
+  font-size: 1.55rem; font-weight: 600;
+  color: var(--white); letter-spacing: .01em;
+}
+.brand-name em { color: var(--gold-lt); font-style: italic; }
+
+/* Tabs de navegación */
+.nav-tabs {
+  display: flex; gap: .25rem;
+}
+.tab-btn {
+  background: none; border: none; cursor: pointer;
+  font-family: var(--ff-body);
+  font-size: .75rem; font-weight: 600;
+  letter-spacing: .08em; text-transform: uppercase;
+  color: rgba(255,255,255,.5);
+  padding: .45rem 1rem; border-radius: 50px;
+  transition: background var(--trans), color var(--trans);
+}
+.tab-btn:hover { color: rgba(255,255,255,.85); }
+.tab-btn.active {
+  background: rgba(184,149,90,.2);
+  color: var(--gold-lt);
+}
+
+/* ── LAYOUT ──────────────────────────── */
+.main {
+  max-width: 900px; margin: 0 auto;
+  padding: 2.5rem 1.5rem 5rem;
+}
+
+/* ── VISTAS ──────────────────────────── */
+.vista { display: none; }
+.vista.activa { display: block; }
+
+/* ── CARDS ───────────────────────────── */
+.card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 2.2rem 2.5rem;
+  box-shadow: var(--shadow);
+  margin-bottom: 1.5rem;
+}
+.card-label {
+  font-size: .68rem; font-weight: 600;
+  letter-spacing: .15em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: .5rem;
+}
+.card-title {
+  font-family: var(--ff-display);
+  font-size: 1.75rem; font-weight: 600;
+  color: var(--wine); line-height: 1.2;
+  margin-bottom: .5rem;
+}
+.card-desc {
+  font-size: .88rem; color: var(--muted);
+  line-height: 1.65; margin-bottom: 1.8rem;
+}
+
+/* ── DROP ZONE ───────────────────────── */
+.drop-zone {
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 2.8rem 1rem;
+  text-align: center; cursor: pointer;
+  transition: border-color var(--trans), background var(--trans);
+  margin-bottom: 1.4rem;
+  display: flex; flex-direction: column;
+  align-items: center; gap: .5rem;
+}
+.drop-zone input { display: none; }
+.drop-zone:hover, .drop-zone.dragover {
+  border-color: var(--gold);
+  background: rgba(184,149,90,.04);
+}
+.drop-zone.tiene-archivo {
+  border-color: var(--gold);
+  background: rgba(184,149,90,.06);
+}
+.drop-icon { font-size: 2.4rem; line-height: 1; }
+.drop-primary { font-size: .9rem; font-weight: 500; color: var(--wine-soft); }
+.drop-primary .link { color: var(--gold); text-decoration: underline; }
+.drop-secondary { font-size: .78rem; color: var(--muted); }
+
+/* ── BOTONES ─────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; gap: .5rem;
+  font-family: var(--ff-body);
+  font-size: .8rem; font-weight: 600;
+  letter-spacing: .07em; text-transform: uppercase;
+  padding: .85rem 1.8rem; border-radius: 50px;
+  border: none; cursor: pointer;
+  transition: background var(--trans), transform var(--trans),
+              box-shadow var(--trans), opacity var(--trans);
+}
+.btn-full { width: 100%; justify-content: center; }
+.btn-primary {
+  background: var(--wine); color: var(--gold-lt);
+  box-shadow: 0 4px 16px rgba(59,26,31,.2);
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--wine-soft);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(59,26,31,.25);
+}
+.btn-primary:disabled { opacity: .38; cursor: not-allowed; }
+.btn-ghost {
+  background: transparent; color: var(--muted);
+  border: 1.5px solid var(--border);
+}
+.btn-ghost:hover { border-color: var(--rose); color: var(--wine); }
+.btn-danger {
+  background: transparent; color: var(--red);
+  border: 1.5px solid rgba(123,45,48,.25);
+}
+.btn-danger:hover { background: rgba(123,45,48,.06); }
+
+/* ── PROGRESO ────────────────────────── */
+.progress-wrap { margin-top: 1.4rem; }
+.progress-bar {
+  height: 4px; background: var(--blush);
+  border-radius: 50px; overflow: hidden; margin-bottom: .6rem;
+}
+.progress-fill {
+  height: 100%; width: 0%;
+  background: linear-gradient(90deg, var(--gold), var(--gold-lt));
+  border-radius: 50px; transition: width .4s ease;
+}
+.progress-text { font-size: .78rem; color: var(--muted); text-align: center; }
+
+/* ── STATS ───────────────────────────── */
+.stats-row {
+  display: flex; gap: .75rem; flex-wrap: wrap;
+  margin-bottom: 1.4rem;
+}
+.stat-chip {
+  background: var(--blush); border-radius: 50px;
+  padding: .38rem 1rem;
+  font-size: .78rem; font-weight: 600; color: var(--wine-soft);
+  display: flex; align-items: center; gap: .35rem;
+}
+.stat-chip em { color: var(--gold); font-style: normal; font-size: .92rem; }
+
+/* ── TABLA ───────────────────────────── */
+.table-wrap {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden; overflow-x: auto;
+  margin-bottom: 1.5rem;
+}
+table {
+  width: 100%; border-collapse: collapse;
+  font-size: .84rem;
+}
+thead { background: var(--wine); }
+th {
+  text-align: left;
+  font-size: .67rem; font-weight: 600;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: rgba(255,255,255,.55);
+  padding: .8rem 1rem;
+}
+td {
+  padding: .82rem 1rem;
+  border-bottom: 1px solid var(--blush);
+  vertical-align: middle;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(242,228,225,.35); }
+.td-nombre { font-weight: 500; color: var(--wine); }
+.badge {
+  display: inline-block;
+  background: var(--blush); color: var(--wine-soft);
+  font-size: .69rem; font-weight: 600;
+  padding: .22rem .65rem; border-radius: 50px;
+}
+.td-precio { font-weight: 600; white-space: nowrap; }
+.td-muted { color: var(--muted); font-size: .82rem; }
+
+/* ── ACCIÓN ROW ──────────────────────── */
+.action-row {
+  display: flex; gap: 1rem; justify-content: flex-end;
+  flex-wrap: wrap; margin-top: .5rem;
+}
+
+/* ── ÉXITO ───────────────────────────── */
+.success-card { text-align: center; }
+.success-icon {
+  font-size: 3rem; color: var(--gold);
+  margin-bottom: .75rem;
+  display: block;
+  animation: pop .4s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes pop {
+  from { transform: scale(0); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+/* ── HISTORIAL ───────────────────────── */
+.historial-empty {
+  text-align: center; padding: 3rem 1rem;
+  color: var(--muted);
+}
+.historial-empty .hi-icon { font-size: 2.8rem; margin-bottom: .75rem; opacity: .4; }
+.historial-empty p { font-size: .9rem; line-height: 1.6; }
+
+.historial-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.1rem 1.4rem;
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  margin-bottom: .75rem; background: var(--white);
+  cursor: pointer; transition: border-color var(--trans), box-shadow var(--trans);
+  gap: 1rem;
+}
+.historial-item:hover {
+  border-color: var(--gold);
+  box-shadow: 0 4px 16px rgba(59,26,31,.08);
+}
+.hi-info { flex: 1; }
+.hi-nombre { font-weight: 600; font-size: .92rem; color: var(--wine); }
+.hi-meta   { font-size: .78rem; color: var(--muted); margin-top: .2rem; }
+.hi-arrow  { color: var(--gold); font-size: 1.1rem; }
+
+/* Modal detalle catálogo */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(59,26,31,.5);
+  display: flex; align-items: center; justify-content: center;
+  padding: 1.5rem;
+  opacity: 0; pointer-events: none;
+  transition: opacity var(--trans);
+}
+.modal-overlay.abierto {
+  opacity: 1; pointer-events: all;
+}
+.modal {
+  background: var(--white);
+  border-radius: var(--radius);
+  width: 100%; max-width: 720px;
+  max-height: 85vh;
+  display: flex; flex-direction: column;
+  box-shadow: var(--shadow-lg);
+  transform: translateY(16px);
+  transition: transform var(--trans);
+}
+.modal-overlay.abierto .modal { transform: translateY(0); }
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.4rem 1.8rem;
+  border-bottom: 1px solid var(--border);
+}
+.modal-title {
+  font-family: var(--ff-display);
+  font-size: 1.4rem; font-weight: 600;
+}
+.modal-close {
+  background: none; border: none; cursor: pointer;
+  font-size: 1.3rem; color: var(--muted); width: 34px; height: 34px;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  transition: background var(--trans);
+}
+.modal-close:hover { background: var(--blush); color: var(--wine); }
+.modal-body { flex: 1; overflow-y: auto; padding: 1.5rem 1.8rem; }
+
+/* ── TOAST ───────────────────────────── */
+.toast {
+  position: fixed; bottom: 2rem; left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--wine); color: var(--white);
+  font-size: .82rem; font-weight: 500;
+  padding: .75rem 1.6rem; border-radius: 50px;
+  box-shadow: 0 8px 32px rgba(59,26,31,.25);
+  opacity: 0; pointer-events: none;
+  transition: opacity .25s ease, transform .25s ease;
+  z-index: 999; white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast.ok    { background: var(--gold); color: var(--wine); }
+.toast.error { background: var(--red); color: var(--white); }
+
+/* ── RESPONSIVE ──────────────────────── */
+@media (max-width: 600px) {
+  .card { padding: 1.5rem 1.2rem; }
+  .card-title { font-size: 1.45rem; }
+  .action-row { flex-direction: column; }
+  .action-row .btn { width: 100%; justify-content: center; }
+  .tab-btn { font-size: .68rem; padding: .4rem .7rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══ HEADER ══════════════════════════ -->
+<header class="header">
+  <div class="header-inner">
+    <div class="brand">
+      <span class="brand-gem">◆</span>
+      <span class="brand-name">Make <em>YOU</em> Up</span>
+    </div>
+    <nav class="nav-tabs">
+      <button class="tab-btn active" onclick="mostrarVista('carga')">Cargar catálogo</button>
+      <button class="tab-btn" onclick="mostrarVista('historial')">Historial</button>
+    </nav>
+  </div>
+</header>
+
+<!-- ══ MAIN ════════════════════════════ -->
+<main class="main">
+
+  <!-- ─── VISTA: CARGA ─────────────────── -->
+  <div class="vista activa" id="vista-carga">
+
+    <!-- Paso 1: subir PDF -->
+    <div class="card" id="card-upload">
+      <div class="card-label">Paso 1</div>
+      <h2 class="card-title">Subir catálogo PDF</h2>
+      <p class="card-desc">Seleccioná el PDF del catálogo de maquillaje. Una vez subido, podrás extraer los productos automáticamente con inteligencia artificial.</p>
+
+      <label class="drop-zone" id="dropZone">
+        <input type="file" id="pdfInput" accept=".pdf"/>
+        <div class="drop-icon">📄</div>
+        <div class="drop-primary">Arrastrá el PDF aquí o <span class="link">hacé clic para elegir</span></div>
+        <div class="drop-secondary" id="fileLabel">Solo archivos .pdf</div>
+      </label>
+
+      <button class="btn btn-primary btn-full" id="btnExtraer" disabled onclick="extraerProductos()">
+        ✦ Extraer productos con IA
+      </button>
+
+      <div class="progress-wrap" id="progressWrap" style="display:none">
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        <p class="progress-text" id="progressText">Preparando…</p>
+      </div>
+    </div>
+
+    <!-- Paso 2: resultados -->
+    <div class="card" id="card-resultados" style="display:none">
+      <div class="card-label">Paso 2 · Revisá los resultados</div>
+      <h2 class="card-title">Productos extraídos</h2>
+      <p class="card-desc">Estos son los productos que encontró la IA en el catálogo. Revisálos y decidí si querés guardarlos en la base de datos.</p>
+
+      <div class="stats-row" id="statsRow"></div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Tipo</th>
+              <th>Color</th>
+              <th>Precio</th>
+            </tr>
+          </thead>
+          <tbody id="tablaBody"></tbody>
+        </table>
+      </div>
+
+      <div class="action-row">
+        <button class="btn btn-danger" onclick="cancelarCarga()">✕ No guardar</button>
+        <button class="btn btn-primary" id="btnGuardar" onclick="guardarEnSupabase()">
+          ◆ Guardar en Supabase
+        </button>
+      </div>
+    </div>
+
+    <!-- Paso 3: éxito -->
+    <div class="card success-card" id="card-exito" style="display:none">
+      <span class="success-icon">✦</span>
+      <div class="card-label" style="justify-content:center;display:flex">Listo</div>
+      <h2 class="card-title">¡Productos guardados!</h2>
+      <p class="card-desc" id="exitoMsg" style="margin-bottom:1.5rem"></p>
+      <button class="btn btn-primary" onclick="nuevaCarga()">
+        ↑ Cargar otro catálogo
+      </button>
+    </div>
+
+  </div><!-- fin vista-carga -->
+
+  <!-- ─── VISTA: HISTORIAL ──────────────── -->
+  <div class="vista" id="vista-historial">
+    <div class="card">
+      <div class="card-label">Catálogos cargados</div>
+      <h2 class="card-title">Historial</h2>
+      <p class="card-desc">Todos los catálogos que subiste. Hacé clic en uno para ver sus productos.</p>
+      <div id="historialLista"></div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ══ MODAL DETALLE ════════════════════ -->
+<div class="modal-overlay" id="modalOverlay" onclick="cerrarModal(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title" id="modalTitulo">Catálogo</h3>
+      <button class="modal-close" onclick="cerrarModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<!-- ══ TOAST ════════════════════════════ -->
+<div class="toast" id="toast"></div>
+
+
+<!-- ══════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════ -->
+<script>
+// ── CONFIG ─────────────────────────────────────────────────────
+// Supabase: estas claves son públicas (anon key) y pueden estar
+// en el frontend. La clave de OpenAI NO está acá; vive en la
+// Netlify Function (netlify/functions/extraer.js).
+const SUPABASE_URL = 'https://jotbdpndvyofmassscph.supabase.co';   // ej: https://xxxx.supabase.co
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpvdGJkcG5kdnlvZm1hc3NzY3BoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIwNzY4NzAsImV4cCI6MjA5NzY1Mjg3MH0.Xlg3-2vuAomusnTGqtt0ZKnbc3CxK20u2_39LQFe3Tw';       // anon/public key
+
+// ── PDF.js ─────────────────────────────────────────────────────
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+// ── ESTADO ─────────────────────────────────────────────────────
+let archivoActual      = null;
+let productosExtraidos = [];
+
+// ── NAVEGACIÓN ─────────────────────────────────────────────────
+function mostrarVista(id) {
+  document.querySelectorAll('.vista').forEach(v => v.classList.remove('activa'));
+  document.getElementById('vista-' + id).classList.add('activa');
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  if (id === 'historial') cargarHistorial();
+}
+
+// ── DRAG & DROP ─────────────────────────────────────────────────
+const dropZone = document.getElementById('dropZone');
+const pdfInput = document.getElementById('pdfInput');
+
+pdfInput.addEventListener('change', e => {
+  if (e.target.files[0]) manejarArchivo(e.target.files[0]);
+});
+dropZone.addEventListener('dragover', e => {
+  e.preventDefault(); dropZone.classList.add('dragover');
+});
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault(); dropZone.classList.remove('dragover');
+  const f = e.dataTransfer.files[0];
+  if (f?.type === 'application/pdf') manejarArchivo(f);
+  else toast('Solo se aceptan archivos PDF', 'error');
+});
+
+function manejarArchivo(file) {
+  archivoActual = file;
+  document.getElementById('fileLabel').textContent =
+    `📄 ${file.name} · ${(file.size/1024).toFixed(0)} KB`;
+  dropZone.classList.add('tiene-archivo');
+  document.getElementById('btnExtraer').disabled = false;
+}
+
+// ── PASO 1: LEER PDF ────────────────────────────────────────────
+async function leerPDF(file) {
+  const buffer = await file.arrayBuffer();
+  const pdf    = await pdfjsLib.getDocument({ data: buffer }).promise;
+  let texto    = '';
+  const total  = pdf.numPages;
+
+  for (let i = 1; i <= total; i++) {
+    setProgreso(Math.round((i / total) * 40), `Leyendo página ${i} de ${total}…`);
+    const page    = await pdf.getPage(i);
+    const content = await page.getTextContent();
+    texto += `\n--- Página ${i} ---\n` + content.items.map(it => it.str).join(' ');
+  }
+  return texto;
+}
+
+// ── PASO 2: LLAMAR A LA NETLIFY FUNCTION ────────────────────────
+async function extraerProductos() {
+  if (!archivoActual) return;
+
+  document.getElementById('btnExtraer').disabled = true;
+  mostrarProgreso(true);
+  setProgreso(5, 'Leyendo PDF…');
+
+  try {
+    const textoPDF = await leerPDF(archivoActual);
+    setProgreso(45, 'Enviando a la IA…');
+
+    // La API key de OpenAI vive en el servidor (Netlify Function).
+    // El navegador NUNCA ve la clave.
+    const res = await fetch('/.netlify/functions/extraer', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ textoPDF }),
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || `Error del servidor: ${res.status}`);
+    }
+
+    const data = await res.json();
+    productosExtraidos = data.productos;
+
+    if (!Array.isArray(productosExtraidos) || productosExtraidos.length === 0) {
+      throw new Error('No se encontraron productos en el PDF.');
+    }
+
+    setProgreso(100, `${productosExtraidos.length} productos encontrados`);
+    setTimeout(() => {
+      mostrarProgreso(false);
+      mostrarResultados();
+    }, 600);
+
+  } catch (err) {
+    mostrarProgreso(false);
+    document.getElementById('btnExtraer').disabled = false;
+    toast('Error: ' + err.message, 'error');
+    console.error(err);
+  }
+}
+
+// ── MOSTRAR TABLA DE RESULTADOS ─────────────────────────────────
+function mostrarResultados() {
+  const tipos     = [...new Set(productosExtraidos.map(p => p.tipo))];
+  const conPrecio = productosExtraidos.filter(p => p.precio > 0).length;
+
+  document.getElementById('statsRow').innerHTML = `
+    <div class="stat-chip"><em>${productosExtraidos.length}</em> productos</div>
+    <div class="stat-chip"><em>${tipos.length}</em> categorías</div>
+    <div class="stat-chip"><em>${conPrecio}</em> con precio</div>
+  `;
+
+  document.getElementById('tablaBody').innerHTML = productosExtraidos.map(p => `
+    <tr>
+      <td class="td-nombre">${esc(p.nombre)}</td>
+      <td><span class="badge">${esc(p.tipo || '—')}</span></td>
+      <td class="td-muted">${p.color ? '🎨 ' + esc(p.color) : '—'}</td>
+      <td class="td-precio">${p.precio > 0 ? '$' + Number(p.precio).toLocaleString('es-AR') : '—'}</td>
+    </tr>
+  `).join('');
+
+  document.getElementById('card-resultados').style.display = 'block';
+  document.getElementById('card-resultados').scrollIntoView({ behavior: 'smooth' });
+}
+
+// ── CANCELAR SIN GUARDAR ────────────────────────────────────────
+function cancelarCarga() {
+  document.getElementById('card-resultados').style.display = 'none';
+  productosExtraidos = [];
+  toast('Descartado. Los productos no se guardaron.');
+  nuevaCarga();
+}
+
+// ── PASO 3: GUARDAR EN SUPABASE ─────────────────────────────────
+async function guardarEnSupabase() {
+  if (!productosExtraidos.length) return;
+
+  const btnG = document.getElementById('btnGuardar');
+  btnG.disabled = true;
+  btnG.textContent = 'Guardando…';
+
+  // Nombre del catálogo = nombre del archivo sin extensión
+  const nombreCatalogo = archivoActual.name.replace(/\.pdf$/i, '');
+
+  const registros = productosExtraidos.map(p => ({
+    nombre:   p.nombre,
+    tipo:     p.tipo   || null,
+    color:    p.color  || null,
+    precio:   p.precio || 0,
+    catalogo: nombreCatalogo,   // para agrupar por catálogo en historial
+  }));
+
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/productos`, {
+      method: 'POST',
+      headers: {
+        'apikey':        SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Content-Type':  'application/json',
+        'Prefer':        'return=minimal',
+      },
+      body: JSON.stringify(registros),
+    });
+
+    if (!res.ok) {
+      const txt = await res.text();
+      throw new Error(`Supabase ${res.status}: ${txt}`);
+    }
+
+    document.getElementById('card-resultados').style.display = 'none';
+    document.getElementById('card-upload').style.display    = 'none';
+    document.getElementById('exitoMsg').textContent =
+      `Se guardaron ${registros.length} productos del catálogo "${nombreCatalogo}" en Supabase.`;
+    document.getElementById('card-exito').style.display = 'block';
+    document.getElementById('card-exito').scrollIntoView({ behavior: 'smooth' });
+    toast(`✓ ${registros.length} productos guardados`, 'ok');
+
+  } catch (err) {
+    toast('Error al guardar: ' + err.message, 'error');
+    console.error(err);
+    btnG.disabled = false;
+    btnG.innerHTML = '◆ Guardar en Supabase';
+  }
+}
+
+// ── NUEVA CARGA ─────────────────────────────────────────────────
+function nuevaCarga() {
+  archivoActual       = null;
+  productosExtraidos  = [];
+  pdfInput.value      = '';
+
+  document.getElementById('fileLabel').textContent   = 'Solo archivos .pdf';
+  dropZone.classList.remove('tiene-archivo', 'dragover');
+  document.getElementById('btnExtraer').disabled     = true;
+  document.getElementById('card-resultados').style.display = 'none';
+  document.getElementById('card-exito').style.display     = 'none';
+  document.getElementById('card-upload').style.display    = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── HISTORIAL ───────────────────────────────────────────────────
+async function cargarHistorial() {
+  const lista = document.getElementById('historialLista');
+  lista.innerHTML = '<p style="color:var(--muted);font-size:.85rem;padding:.5rem 0">Cargando…</p>';
+
+  try {
+    // Traer todos los productos y agrupar por catálogo
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/productos?select=catalogo,nombre,tipo,color,precio&order=id.desc`,
+      {
+        headers: {
+          'apikey':        SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+        },
+      }
+    );
+
+    if (!res.ok) throw new Error('Error al cargar historial');
+    const todos = await res.json();
+
+    if (!todos.length) {
+      lista.innerHTML = `
+        <div class="historial-empty">
+          <div class="hi-icon">📂</div>
+          <p>Todavía no cargaste ningún catálogo.<br>Usá la pestaña <strong>Cargar catálogo</strong> para comenzar.</p>
+        </div>`;
+      return;
+    }
+
+    // Agrupar por nombre de catálogo
+    const grupos = {};
+    todos.forEach(p => {
+      const cat = p.catalogo || 'Sin nombre';
+      if (!grupos[cat]) grupos[cat] = [];
+      grupos[cat].push(p);
+    });
+
+    lista.innerHTML = Object.entries(grupos).map(([nombre, prods]) => `
+      <div class="historial-item" onclick="verCatalogo('${esc(nombre)}', ${JSON.stringify(prods).replace(/'/g, "&#39;")})">
+        <div class="hi-info">
+          <div class="hi-nombre">📄 ${esc(nombre)}</div>
+          <div class="hi-meta">${prods.length} productos · ${[...new Set(prods.map(p=>p.tipo))].filter(Boolean).slice(0,3).join(', ')}</div>
+        </div>
+        <span class="hi-arrow">→</span>
+      </div>
+    `).join('');
+
+  } catch (err) {
+    lista.innerHTML = `<p style="color:var(--muted);font-size:.85rem">Error: ${err.message}.<br>Verificá la configuración de Supabase.</p>`;
+    console.error(err);
+  }
+}
+
+// ── MODAL DETALLE ───────────────────────────────────────────────
+function verCatalogo(nombre, productos) {
+  document.getElementById('modalTitulo').textContent = '📄 ' + nombre;
+  document.getElementById('modalBody').innerHTML = `
+    <div class="stats-row" style="margin-bottom:1.2rem">
+      <div class="stat-chip"><em>${productos.length}</em> productos</div>
+      <div class="stat-chip"><em>${[...new Set(productos.map(p=>p.tipo))].filter(Boolean).length}</em> categorías</div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Nombre</th><th>Tipo</th><th>Color</th><th>Precio</th></tr></thead>
+        <tbody>
+          ${productos.map(p => `
+            <tr>
+              <td class="td-nombre">${esc(p.nombre)}</td>
+              <td><span class="badge">${esc(p.tipo||'—')}</span></td>
+              <td class="td-muted">${p.color ? '🎨 '+esc(p.color) : '—'}</td>
+              <td class="td-precio">${p.precio > 0 ? '$'+Number(p.precio).toLocaleString('es-AR') : '—'}</td>
+            </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`;
+  document.getElementById('modalOverlay').classList.add('abierto');
+}
+
+function cerrarModal(e) {
+  if (!e || e.target === document.getElementById('modalOverlay')) {
+    document.getElementById('modalOverlay').classList.remove('abierto');
+  }
+}
+
+// ── UTILIDADES ──────────────────────────────────────────────────
+function setProgreso(pct, texto) {
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressText').textContent  = texto;
+}
+function mostrarProgreso(v) {
+  document.getElementById('progressWrap').style.display = v ? 'block' : 'none';
+  if (!v) setProgreso(0, '');
+}
+
+let _toastTimer;
+function toast(msg, tipo = '') {
+  clearTimeout(_toastTimer);
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className   = 'toast' + (tipo ? ' ' + tipo : '');
+  void t.offsetWidth;
+  t.classList.add('show');
+  _toastTimer = setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+function esc(str) {
+  return String(str ?? '')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>
